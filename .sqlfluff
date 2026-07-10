@@ -1,0 +1,121 @@
+[sqlfluff]
+# Dialect for Databricks (uses Spark SQL syntax)
+dialect = databricks
+
+# Templater for dbt projects
+templater = dbt
+
+# Exclude paths from linting
+exclude_rules = None
+
+# Number of parallel processes
+processes = -1
+
+# Maximum line length
+max_line_length = 120
+
+# Comma placement (trailing is recommended)
+large_file_skip_byte_limit = 25000
+
+[sqlfluff:indentation]
+# Indentation settings
+indent_unit = space
+tab_space_size = 4
+indented_joins = False
+indented_ctes = False
+indented_using_on = True
+indented_on_contents = True
+
+[sqlfluff:layout:type:comma]
+# Trailing commas (best practice for version control diffs)
+line_position = trailing
+
+[sqlfluff:rules]
+# Allow implicit aliasing
+allow_scalar = True
+
+[sqlfluff:rules:capitalisation.keywords]
+# Uppercase SQL keywords (SELECT, FROM, WHERE, etc.)
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.identifiers]
+# Lowercase identifiers (table names, column names)
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+# Uppercase function names
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.literals]
+# Uppercase literals (NULL, TRUE, FALSE)
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.types]
+# Uppercase data types (INT, STRING, etc.)
+capitalisation_policy = upper
+
+[sqlfluff:rules:aliasing.table]
+# Require explicit aliasing with AS keyword
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.column]
+# Require explicit aliasing with AS keyword
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.length]
+# Minimum alias length
+min_alias_length = 2
+
+[sqlfluff:rules:convention.select_trailing_comma]
+# Allow trailing comma on SELECT (helps with diffs)
+select_clause_trailing_comma = forbid
+
+[sqlfluff:rules:convention.count_rows]
+# Use COUNT(*) instead of COUNT(1)
+prefer_count_1 = False
+prefer_count_0 = False
+
+[sqlfluff:rules:convention.terminator]
+# Require semicolons at end of statements
+multiline_newline = False
+require_final_semicolon = False
+
+[sqlfluff:rules:convention.blocked_words]
+# Block certain words (add any words to avoid)
+blocked_words = None
+
+[sqlfluff:rules:ambiguous.join]
+# Require explicit join types (INNER, LEFT, etc.)
+fully_qualify_join_types = inner
+
+[sqlfluff:rules:ambiguous.column_references]
+# Require table qualifiers on column references in JOINs
+group_by_and_order_by_style = consistent
+
+[sqlfluff:rules:structure.subquery]
+# Subquery should not be wrapped in extra parentheses
+forbid_subquery_in = both
+
+[sqlfluff:rules:references.consistent]
+# Column references should be consistent
+single_table_references = consistent
+
+[sqlfluff:rules:references.keywords]
+# Don't use reserved words as identifiers
+ignore_words = None
+
+[sqlfluff:rules:layout.long_lines]
+# How to handle long lines
+ignore_comment_lines = True
+ignore_comment_clauses = True
+
+[sqlfluff:templater:dbt]
+# dbt project configuration
+project_dir = ./
+profiles_dir = ~/.dbt/
+profile = databricks
+target = dev
+
+[sqlfluff:templater:jinja]
+# Jinja templating settings
+apply_dbt_builtins = True
