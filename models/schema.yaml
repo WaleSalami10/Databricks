@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: game_details
+  - name: mt__game_details
     columns:
       - name: game_id
         tests:
@@ -35,7 +35,7 @@ models:
         tests:
           - not_null
           
-  - name: win_loss_records
+  - name: mt__win_loss_records
     columns:
       - name: team
         tests:
@@ -43,7 +43,7 @@ models:
           - not_null
           - relationships:
               arguments:
-                to: ref('game_details')
+                to: ref('mt__game_details')
                 field: home
       - name: wins
         tests:
@@ -52,7 +52,7 @@ models:
         tests:
           - not_null
 
-  - name: customers
+  - name: stg__customers
     description: One record per customer
     columns:
       - name: customer_id
@@ -63,16 +63,7 @@ models:
       - name: first_order_date
         description: NULL when a customer has not yet placed an order.
 
-  - name: stg_customers
-    description: This model cleans up customer data
-    columns:
-      - name: customer_id
-        description: Primary key
-        data_tests:
-          - unique
-          - not_null
-
-  - name: stg_orders
+  - name: stg__orders
     description: This model cleans up order data
     columns:
       - name: order_id
@@ -90,5 +81,5 @@ models:
           - not_null
           - relationships:
               arguments:
-                to: ref('stg_customers')
+                to: ref('stg__customers')
                 field: customer_id

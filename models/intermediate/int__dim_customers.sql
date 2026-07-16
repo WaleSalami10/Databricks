@@ -1,12 +1,12 @@
 WITH customers AS (
 
-    SELECT * FROM {{ ref('stg_customers') }}
+    SELECT * FROM {{ ref('stg__customers') }}
 
 ),
 
 orders AS (
 
-    SELECT * FROM {{ ref('stg_orders') }}
+    SELECT * FROM {{ ref('stg__orders') }}
 
 ),
 
@@ -42,3 +42,4 @@ final AS (
 )
 
 SELECT * FROM final
+
