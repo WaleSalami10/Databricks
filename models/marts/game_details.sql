@@ -6,55 +6,55 @@
     ) 
 }}
 -- Step 4 of 4: Replace the visitor team IDs with their city names.
-select
-  game_id,
-  home,
-  t.team_city as visitor,
-  home_score,
-  visitor_score,
-  -- Step 3 of 4: Display the city name for each game's winner.
-  case
-    when
-      home_score > visitor_score
-        then
-          home
-    when
-      visitor_score > home_score
-        then
-          t.team_city
-  end as winner,
-  game_date as date
-from (
-  -- Step 2 of 4: Replace the home team IDs with their actual city names.
-  select
+SELECT
     game_id,
-    t.team_city as home,
+    home,
+    t.team_city AS visitor,
     home_score,
-    visitor_team_id,
     visitor_score,
-    game_date
-  from (
+    -- Step 3 of 4: Display the city name for each game's winner.
+    game_date AS date,
+    CASE
+        WHEN
+            home_score > visitor_score
+            THEN
+                home
+        WHEN
+            visitor_score > home_score
+            THEN
+                t.team_city
+    END AS winner
+FROM (
+    -- Step 2 of 4: Replace the home team IDs with their actual city names.
+    SELECT
+        game_id,
+        t.team_city AS home,
+        home_score,
+        visitor_team_id,
+        visitor_score,
+        game_date
+    FROM (
     -- Step 1 of 4: Combine data from various tables (for example, game and team IDs, scores, dates).
-    select
-      g.game_id,
-      go.home_team_id,
-      gs.home_team_score as home_score,
-      go.visitor_team_id,
-      gs.visitor_team_score as visitor_score,
-      g.game_date
-    from
-      default.games as g,
-      default.game_opponents as go,
-      default.game_scores as gs
-    where
-      g.game_id = go.game_id and
-      g.game_id = gs.game_id
-  ) as all_ids,
-    default.teams as t
-  where
-    all_ids.home_team_id = t.team_id
-) as visitor_ids,
-  default.teams as t
-where
-  visitor_ids.visitor_team_id = t.team_id
-order by game_date desc
+        SELECT
+            g.game_id,
+            go.home_team_id,
+            gs.home_team_score AS home_score,
+            go.visitor_team_id,
+            gs.visitor_team_score AS visitor_score,
+            g.game_date
+        FROM
+            default.games AS g,
+            default.game_opponents AS go,
+            default.game_scores AS gs
+        WHERE
+            g.game_id = go.game_id
+            AND g.game_id = gs.game_id
+    ) AS all_ids,
+        default.teams AS t
+    WHERE
+        all_ids.home_team_id = t.team_id
+) AS visitor_ids,
+    default.teams AS t
+WHERE
+    visitor_ids.visitor_team_id = t.team_id
+ORDER BY game_date DESC

@@ -1,0 +1,31 @@
+# dbt build artifacts (compiled SQL - not source files)
+target/
+
+# dbt packages (external dependencies)
+dbt_packages/
+
+# dbt logs
+logs/
+
+# Git directory
+.git/
+
+# Databricks specific files
+.databricks/
+
+# IDE and editor settings
+.vscode/
+.idea/
+
+# Type definitions
+typings/
+
+# Environment and config files
+.env
+*.env
+
+# Documentation (non-SQL files)
+*.md
+
+# Keep files (empty placeholders)
+.gitkeep

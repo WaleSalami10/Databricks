@@ -1,3 +1,3 @@
-select distinct color
-from {{ ref('diamonds_four_cs') }} 
-sort by color asc
+SELECT DISTINCT color
+FROM {{ ref('diamonds_four_cs') }}
+SORT BY color ASC
