@@ -25,7 +25,7 @@ from (
       else
         home
     end as loser
-  from {{ ref('game_details') }}
+  from {{ ref('mt__game_details') }}
 )
 group by winner
 order by wins desc
