@@ -5,6 +5,10 @@ name: "Databricks"
 version: "1.0.0"
 config-version: 2
 
+dbt-cloud:
+    project-id: 70506183148308
+
+
 # This setting configures which "profile" dbt uses for this project.
 profile: "Databricks"
 
