@@ -5,12 +5,12 @@ name: "Databricks"
 version: "1.0.0"
 config-version: 2
 
-dbt-cloud:
-    project-id: 70506183148308
 
+dbt-cloud:
+    project-id: 70506183152409
 
 # This setting configures which "profile" dbt uses for this project.
-profile: "databricks"
+profile: "Databricks"
 
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
@@ -38,6 +38,6 @@ clean-targets: # directories to be removed by `dbt clean`
 # using the `{{ config(...) }}` macro.
 
 models:
-  jaffle_shop:
-    # Applies to all files under models/example/
-    +materialized: table
+  Databricks:
+    example:
+      +materialized: table

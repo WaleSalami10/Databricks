@@ -113,7 +113,7 @@ ignore_comment_clauses = True
 # dbt project configuration
 project_dir = ./
 profiles_dir = ~/.dbt/
-profile = databricks
+profile = Databricks
 target = dev
 
 [sqlfluff:templater:jinja]
