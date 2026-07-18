@@ -12,6 +12,9 @@ dbt-cloud:
 # This setting configures which "profile" dbt uses for this project.
 profile: "Databricks"
 
+vars:
+  dbt_date:time_zone: "America/New_York"
+
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
@@ -39,5 +42,31 @@ clean-targets: # directories to be removed by `dbt clean`
 
 models:
   Databricks:
-    example:
+    staging:  # Applies to all files under models/staging/
+      +schema: dbt_silver_schema
+      +catalog: dbt-dev-catalog
+      +tags: staging
+      +meta:
+        description: "Staging models for the Databricks project"
       +materialized: table
+
+    intermediate:
+      +schema: dbt_dev_schema
+      +catalog: dbt-silver-catalog
+      +tags: intermediate
+      +meta:
+        description: "Intermediate models for the Databricks project"
+      +materialized: table
+
+    marts:
+      +schema: dbt_gold_schema
+      +catalog: dbt-dev-catalog
+      +tags: mart
+      +meta:
+        description: "Mart models for the Databricks project"
+      +materialized: table
+
+seeds:
+  Databricks:
+    +schema: dbt_raw_schema
+
