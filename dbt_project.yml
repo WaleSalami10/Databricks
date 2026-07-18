@@ -7,7 +7,7 @@ config-version: 2
 
 
 dbt-cloud:
-    project-id: 70506183152409
+  project-id: 70506183152409
 
 # This setting configures which "profile" dbt uses for this project.
 profile: "Databricks"
@@ -24,8 +24,6 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
-
-target-path: "target" # directory which will store compiled SQL files
 clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
@@ -70,3 +68,5 @@ seeds:
   Databricks:
     +schema: dbt_raw_schema
 
+flags:
+  require_generic_test_arguments_property: true
