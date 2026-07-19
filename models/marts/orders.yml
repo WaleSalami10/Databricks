@@ -54,64 +54,6 @@ models:
       - name: customer_order_number
         dimension:
           type: categorical
-    semantic_model:
-      enabled: true
-    agg_time_dimension: ordered_at
-    metrics:
-      - name: order_cost
-        description: Sum of cost for each order item.
-        label: Order Cost
-        type: simple
-        agg: sum
-      - name: order_total
-        description: Sum of total order amonunt. Includes tax + revenue.
-        type: simple
-        label: Order Total
-        agg: sum
-      - name: new_customer_orders
-        description: New customer's first order count
-        label: New Customers
-        type: simple
-        filter: |
-          {{ Dimension('order_id__customer_order_number') }} = 1
-        agg: sum
-        expr: 1
-      - name: large_orders
-        description: "Count of orders with order total over 20."
-        type: simple
-        label: Large Orders
-        filter: |
-          {{ Dimension('order_id__order_total_dim') }} >= 20
-        agg: sum
-        expr: 1
-      - name: orders
-        description: Count of orders.
-        label: Orders
-        type: simple
-        agg: sum
-        expr: 1
-      - name: food_orders
-        description: Count of orders that contain food order items
-        label: Food Orders
-        type: simple
-        filter: |
-          {{ Dimension('order_id__is_food_order') }} = true
-        agg: sum
-        expr: 1
-      - name: drink_orders
-        description: Count of orders that contain drink order items
-        label: Drink Orders
-        type: simple
-        filter: |
-          {{ Dimension('order_id__is_drink_order') }} = true
-
-        agg: sum
-        expr: 1
-      - name: tax_paid
-        description: The total tax paid on each order.
-        agg: sum
-        type: simple
-        hidden: true
 unit_tests:
   - name: test_order_items_compute_to_bools_correctly
     description: "Test that the counts of drinks and food orders convert to booleans properly."
@@ -130,6 +72,91 @@ unit_tests:
       rows:
         - {order_id: 1, count_food_items: 1, count_drink_items: 1, is_drink_order: true, is_food_order: true}
         - {order_id: 2, count_food_items: 1, count_drink_items: 0, is_drink_order: false, is_food_order: true}
+
+semantic_models:
+  - name: orders
+    model: ref('orders')
+    defaults:
+      agg_time_dimension: ordered_at
+    entities:
+      - name: order_id
+        type: primary
+      - name: customer
+        type: foreign
+        expr: customer_id
+      - name: location
+        type: foreign
+        expr: location_id
+    dimensions:
+      - name: ordered_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: order_total_dim
+        type: categorical
+        expr: order_total
+      - name: is_food_order
+        type: categorical
+      - name: is_drink_order
+        type: categorical
+      - name: customer_order_number
+        type: categorical
+    measures:
+      - name: order_cost
+        description: Sum of cost for each order item.
+        agg: sum
+        create_metric: true
+      - name: order_total
+        description: Sum of total order amonunt. Includes tax + revenue.
+        agg: sum
+        create_metric: true
+      - name: tax_paid
+        description: The total tax paid on each order.
+        agg: sum
+      - name: order_count
+        description: A count of one per order, used as the base measure for order-count metrics.
+        agg: sum
+        expr: "1"
+
+metrics:
+  - name: new_customer_orders
+    description: New customer's first order count
+    label: New Customers
+    type: simple
+    filter: |
+      {{ Dimension('order_id__customer_order_number') }} = 1
+    type_params:
+      measure: order_count
+  - name: large_orders
+    description: "Count of orders with order total over 20."
+    label: Large Orders
+    type: simple
+    filter: |
+      {{ Dimension('order_id__order_total_dim') }} >= 20
+    type_params:
+      measure: order_count
+  - name: orders
+    description: Count of orders.
+    label: Orders
+    type: simple
+    type_params:
+      measure: order_count
+  - name: food_orders
+    description: Count of orders that contain food order items
+    label: Food Orders
+    type: simple
+    filter: |
+      {{ Dimension('order_id__is_food_order') }} = true
+    type_params:
+      measure: order_count
+  - name: drink_orders
+    description: Count of orders that contain drink order items
+    label: Drink Orders
+    type: simple
+    filter: |
+      {{ Dimension('order_id__is_drink_order') }} = true
+    type_params:
+      measure: order_count
 
 saved_queries:
   - name: order_metrics

@@ -30,71 +30,8 @@ models:
       - name: is_drink_item
         dimension:
           type: categorical
-    semantic_model:
-      enabled: true
-      name: order_items
     description: |
       Items contatined in each order. The grain of the table is one row per order item.
-    agg_time_dimension: ordered_at
-    metrics:
-      - name: revenue
-        description: Sum of the product revenue for each order item. Excludes tax.
-        type: simple
-        label: Revenue
-        agg: sum
-        expr: product_price
-      - name: median_revenue
-        description: The median revenue for each order item. Excludes tax.
-        type: simple
-        label: Median Revenue
-        agg: median
-        expr: product_price
-      - name: food_revenue
-        description: The revenue from food in each order
-        label: Food Revenue
-        type: simple
-        agg: sum
-        expr: case when is_food_item then product_price else 0 end
-      - name: drink_revenue
-        description: The revenue from drinks in each order
-        label: Drink Revenue
-        type: simple
-        agg: sum
-        expr: case when is_drink_item then product_price else 0 end
-      - name: food_revenue_pct
-        description: The % of order revenue from food.
-        label: Food Revenue %
-        type: ratio
-        numerator: food_revenue
-        denominator: revenue
-      - name: drink_revenue_pct
-        description: The % of order revenue from drinks.
-        label: Drink Revenue %
-        type: ratio
-        numerator: drink_revenue
-        denominator: revenue
-      - name: revenue_growth_mom
-        description: "Percentage growth of revenue compared to 1 month ago. Excluded tax"
-        type: derived
-        label: Revenue Growth % M/M
-        expr: (current_revenue - revenue_prev_month)*100/revenue_prev_month
-        input_metrics:
-          - name: revenue
-            alias: current_revenue
-          - name: revenue
-            offset_window: 1 month
-            alias: revenue_prev_month
-      - name: revenue_1
-        description: The revenue generated for each order item. Revenue is calculated as a sum of revenue associated with each product in an order.
-        agg: sum
-        expr: product_price
-        type: simple
-        hidden: true
-      - name: cumulative_revenue
-        description: The cumulative revenue for all orders.
-        label: Cumulative Revenue (All Time)
-        type: cumulative
-        input_metric: revenue_1
 unit_tests:
   - name: test_supply_costs_sum_correctly
     description: "Test that the counts of drinks and food orders convert to booleans properly."
@@ -124,19 +61,101 @@ unit_tests:
         - {order_id: 2, product_id: 2, supply_cost: 8.50}
         - {order_id: 2, product_id: 2, supply_cost: 8.50}
 
+semantic_models:
+  - name: order_items
+    model: ref('order_items')
+    defaults:
+      agg_time_dimension: ordered_at
+    entities:
+      - name: order_item
+        type: primary
+      - name: order
+        type: foreign
+        expr: order_id
+      - name: product
+        type: foreign
+        expr: product_id
+    dimensions:
+      - name: ordered_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: is_food_item
+        type: categorical
+      - name: is_drink_item
+        type: categorical
+    measures:
+      - name: revenue
+        description: Sum of the product revenue for each order item. Excludes tax.
+        agg: sum
+        expr: product_price
+        create_metric: true
+      - name: median_revenue
+        description: The median revenue for each order item. Excludes tax.
+        agg: median
+        expr: product_price
+        create_metric: true
+      - name: food_revenue
+        description: The revenue from food in each order
+        agg: sum
+        expr: case when is_food_item then product_price else 0 end
+        create_metric: true
+      - name: drink_revenue
+        description: The revenue from drinks in each order
+        agg: sum
+        expr: case when is_drink_item then product_price else 0 end
+        create_metric: true
+      - name: revenue_1
+        description: The revenue generated for each order item, used as the base measure for cumulative revenue.
+        agg: sum
+        expr: product_price
+
 metrics:
   # Simple metrics
   - name: order_gross_profit
     description: Gross profit from each order.
     type: derived
     label: Order Gross Profit
-    expr: revenue - cost
-    input_metrics:
-      - name: revenue
-      - name: order_cost
-        alias: cost
+    type_params:
+      expr: revenue - cost
+      metrics:
+        - name: revenue
+        - name: order_cost
+          alias: cost
+  - name: food_revenue_pct
+    description: The % of order revenue from food.
+    label: Food Revenue %
+    type: ratio
+    type_params:
+      numerator: food_revenue
+      denominator: revenue
+  - name: drink_revenue_pct
+    description: The % of order revenue from drinks.
+    label: Drink Revenue %
+    type: ratio
+    type_params:
+      numerator: drink_revenue
+      denominator: revenue
+  - name: revenue_growth_mom
+    description: "Percentage growth of revenue compared to 1 month ago. Excluded tax"
+    type: derived
+    label: Revenue Growth % M/M
+    type_params:
+      expr: (current_revenue - revenue_prev_month)*100/revenue_prev_month
+      metrics:
+        - name: revenue
+          alias: current_revenue
+        - name: revenue
+          offset_window: 1 month
+          alias: revenue_prev_month
 
   #Cumulative Metrics
+  - name: cumulative_revenue
+    description: The cumulative revenue for all orders.
+    label: Cumulative Revenue (All Time)
+    type: cumulative
+    type_params:
+      measure: revenue_1
 saved_queries:
   - name: revenue_metrics
     query_params:

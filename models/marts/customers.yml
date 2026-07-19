@@ -45,40 +45,58 @@ models:
 
         dimension:
           type: categorical
-    semantic_model:
-      enabled: true
-    agg_time_dimension: first_ordered_at
-    metrics:
+semantic_models:
+  - name: customers
+    model: ref('customers')
+    defaults:
+      agg_time_dimension: first_ordered_at
+    entities:
+      - name: customer
+        type: primary
+        expr: customer_id
+    dimensions:
+      - name: customer_name
+        type: categorical
+      - name: first_ordered_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: last_ordered_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: customer_type
+        type: categorical
+    measures:
       - name: lifetime_spend_pretax
         description: Customer's lifetime spend before tax
-        label: LTV Pre-tax
-        type: simple
         agg: sum
+        create_metric: true
       - name: count_lifetime_orders
         description: Count of lifetime orders
-        label: Count Lifetime Orders
-        type: simple
         agg: sum
+        create_metric: true
       - name: customers
         description: Count of unique customers
         agg: count_distinct
         expr: customer_id
-        type: simple
-        hidden: true
+        create_metric: true
       - name: lifetime_spend
-        agg: sum
         description: Gross customer lifetime spend inclusive of taxes.
+        agg: sum
+        create_metric: true
 
-        type: simple
-        hidden: true
-      - name: average_order_value
-        description: LTV pre-tax / number of orders
-        label: Average Order Value
-        type: derived
-        expr: lifetime_spend_pretax / count_lifetime_orders
-        input_metrics:
-          - name: count_lifetime_orders
-          - name: lifetime_spend_pretax
+metrics:
+  - name: average_order_value
+    description: LTV pre-tax / number of orders
+    label: Average Order Value
+    type: derived
+    type_params:
+      expr: lifetime_spend_pretax / count_lifetime_orders
+      metrics:
+        - name: count_lifetime_orders
+        - name: lifetime_spend_pretax
+
 saved_queries:
   - name: customer_order_metrics
     description: Customer order metrics grouped by customer entity.

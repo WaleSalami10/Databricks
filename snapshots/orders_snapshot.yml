@@ -1,0 +1,23 @@
+version: 2
+
+snapshots:
+  - name: orders_snapshot
+    relation: ref('orders')
+    description: >
+      Point-in-time history of the orders mart, tracking changes to order
+      totals, cost, food/drink flags, and location using the check strategy.
+    config:
+      target_schema: dbt_snapshots
+      target_database: dbt-dev-catalog
+      unique_key: order_id
+      strategy: check
+      check_cols: ['order_total', 'order_cost', 'is_food_order', 'is_drink_order', 'location_id']
+    columns:
+      - name: order_id
+        description: The unique key of the orders mart.
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp when this version of the record became valid.
+      - name: dbt_valid_to
+        description: Timestamp when this version of the record was superseded, or null if still current.

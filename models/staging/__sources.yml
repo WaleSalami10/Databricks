@@ -4,6 +4,10 @@ sources:
   - name: ecom
     catalog: dbt-dev-catalog
     schema: dbt_raw_schema
+    config:
+      freshness:
+        warn_after: {}
+        error_after: {}
     description: E-commerce data for the Jaffle Shop
     tables:
       - name: raw_customers
