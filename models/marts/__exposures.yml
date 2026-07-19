@@ -1,0 +1,17 @@
+version: 2
+
+exposures:
+  - name: order_metrics_dashboard
+    label: "Order Metrics Dashboard"
+    type: dashboard
+    maturity: high
+    url: https://your-bi-tool.com/dashboards/order-metrics
+    description: >
+      Executive dashboard tracking order volume, revenue, and customer segments.
+    depends_on:
+      - ref('orders')
+      - ref('order_items')
+      - ref('customers')
+    owner:
+      name: Olawale Salami
+      email: hardwaals@gmail.com

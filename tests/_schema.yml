@@ -1,0 +1,7 @@
+version: 2
+
+data_tests:
+  - name: assert_order_total_is_non_negative
+    description: "Fails if any order in the orders mart has a negative order_total."
+    config:
+      severity: error
