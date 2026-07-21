@@ -68,5 +68,9 @@ seeds:
   Databricks:
     +schema: dbt_raw_schema
 
+snapshots:
+  Databricks:
+    +schema: dbt_snapshots
+
 flags:
   require_generic_test_arguments_property: true

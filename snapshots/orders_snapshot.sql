@@ -7,6 +7,7 @@
         unique_key='order_id',
         strategy='check',
         check_cols=['order_total', 'order_cost', 'is_food_order', 'is_drink_order', 'location_id'],
+        hard_deletes='new_record',
     )
 }}
 
