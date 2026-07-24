@@ -74,3 +74,7 @@ snapshots:
 
 flags:
   require_generic_test_arguments_property: true
+  warn_error_options:
+    silence:
+      - SemanticModelDeprecated
+      - UnusedResourceConfigPath
