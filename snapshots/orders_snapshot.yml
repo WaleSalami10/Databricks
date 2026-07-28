@@ -10,6 +10,8 @@ snapshots:
         description: The unique key of the orders mart.
         data_tests:
           - not_null
+          - unique
+          
       - name: dbt_valid_from
         description: Timestamp when this version of the record became valid.
       - name: dbt_valid_to
